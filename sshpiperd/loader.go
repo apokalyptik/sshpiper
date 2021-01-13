@@ -10,5 +10,6 @@ import (
 	_ "github.com/tg123/sshpiper/sshpiperd/challenger/pam"
 	_ "github.com/tg123/sshpiper/sshpiperd/challenger/pome"
 
+	_ "github.com/tg123/sshpiper/sshpiperd/auditor/detailedlogger"
 	_ "github.com/tg123/sshpiper/sshpiperd/auditor/typescriptlogger"
 )
