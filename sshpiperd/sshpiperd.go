@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -196,12 +197,13 @@ func startPiper(config *piperdConfig, logger *log.Logger) error {
 		go func(c net.Conn) {
 			defer c.Close()
 
+			ctx := context.WithValue(context.Background(), ssh.SSHPiperContextDownstreamAddress, c.RemoteAddr().String())
 			pipec := make(chan *ssh.PiperConn, 0)
 			errorc := make(chan error, 0)
 
 			go func() {
-				p, err := ssh.NewSSHPiperConn(c, piper)
-
+				p, c, err := ssh.NewSSHPiperConnWithContext(c, piper, ctx)
+				ctx = c
 				if err != nil {
 					errorc <- err
 					return
@@ -231,13 +233,20 @@ func startPiper(config *piperdConfig, logger *log.Logger) error {
 					return
 				}
 				defer a.Close()
-
+				a.AddContext(ctx)
 				p.HookUpstreamMsg = a.GetUpstreamHook()
 				p.HookDownstreamMsg = a.GetDownstreamHook()
 			}
 
 			err = p.Wait()
-			logger.Printf("connection from %v closed reason: %v", c.RemoteAddr(), err)
+			logger.Printf(
+				"connection from %s@%s to %s@%v closed reason: %v",
+				ctx.Value(ssh.SSHPiperContextDownstreamUsername).(string),
+				ctx.Value(ssh.SSHPiperContextDownstreamAddress).(string),
+				ctx.Value(ssh.SSHPiperContextUpstreamUsername).(string),
+				ctx.Value(ssh.SSHPiperContextUpstreamAddress).(string),
+				err,
+			)
 		}(conn)
 	}
 }

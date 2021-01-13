@@ -1,6 +1,8 @@
 package auditor
 
 import (
+	"context"
+
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tg123/sshpiper/sshpiperd/registry"
@@ -20,6 +22,10 @@ type Auditor interface {
 	// All msg between piper and downstream will be put into the hook
 	// nil for ignore
 	GetDownstreamHook() Hook
+
+	// Add a context to the auditor in question. What the auditor
+	// does, or does not do, with this context is up to it
+	AddContext(context.Context)
 
 	// Will be called when connection closed
 	Close() error

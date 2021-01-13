@@ -1,6 +1,7 @@
 package typescriptlogger
 
 import (
+	"context"
 	"log"
 	"os"
 	"path"
@@ -37,6 +38,9 @@ func (p *plugin) Create(conn ssh.ConnMetadata) (auditor.Auditor, error) {
 func (p *plugin) Init(logger *log.Logger) error {
 
 	return nil
+}
+
+func (l *filePtyLogger) AddContext(c context.Context) {
 }
 
 func (l *filePtyLogger) GetUpstreamHook() auditor.Hook {

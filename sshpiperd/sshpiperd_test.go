@@ -1,17 +1,19 @@
 package main
 
 import (
+	"context"
 	"log"
 	"testing"
 
 	"fmt"
+	"net"
+	"time"
+
 	"github.com/tg123/sshpiper/sshpiperd/auditor"
 	"github.com/tg123/sshpiper/sshpiperd/challenger"
 	"github.com/tg123/sshpiper/sshpiperd/registry"
 	"github.com/tg123/sshpiper/sshpiperd/upstream"
 	"golang.org/x/crypto/ssh"
-	"net"
-	"time"
 )
 
 type testplugin struct {
@@ -159,6 +161,9 @@ func (t *testauditor) GetUpstreamHook() auditor.Hook {
 
 func (t *testauditor) GetDownstreamHook() auditor.Hook {
 	return t.down
+}
+
+func (t *testauditor) AddContext(c context.Context) {
 }
 
 func (t *testauditor) Close() error {
